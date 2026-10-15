@@ -56,18 +56,21 @@ export function Hero() {
           </motion.p>
 
           <motion.div
-                      initial={{ opacity: 0, y: 24 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.3 }}
-                      className="mt-8 flex flex-col sm:flex-row flex-wrap items-center gap-4 sm:divide-x sm:divide-border sm:gap-0"
-                    >
-                      {features.map((f, i) => (
-                        <div key={f.label} className={`flex items-center gap-2 ${i > 0 ? "sm:pl-6" : ""} sm:pr-6`}>
-                          <f.icon className="size-5 text-accent" />
-                          <span className="text-sm font-medium">{f.label}</span>
-                        </div>
-                      ))}
-                    </motion.div>
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="mt-8 flex flex-wrap items-center gap-2.5 sm:gap-3"
+          >
+            {features.map((f) => (
+              <div
+                key={f.label}
+                className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-card/60 px-3.5 py-1.5 text-xs sm:text-sm font-medium text-foreground backdrop-blur-sm"
+              >
+                <f.icon className="size-4 shrink-0 text-accent" />
+                <span>{f.label}</span>
+              </div>
+            ))}
+          </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 24 }}
