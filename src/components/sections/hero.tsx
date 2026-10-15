@@ -56,18 +56,18 @@ export function Hero() {
           </motion.p>
 
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="mt-8 flex flex-wrap items-center divide-x divide-border"
-          >
-            {features.map((f, i) => (
-              <div key={f.label} className={`flex items-center gap-2 pr-6 ${i > 0 ? "pl-6" : ""}`}>
-                <f.icon className="size-5 text-accent" />
-                <span className="text-sm font-medium">{f.label}</span>
-              </div>
-            ))}
-          </motion.div>
+                      initial={{ opacity: 0, y: 24 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: 0.3 }}
+                      className="mt-8 flex flex-col sm:flex-row flex-wrap items-center gap-4 sm:divide-x sm:divide-border sm:gap-0"
+                    >
+                      {features.map((f, i) => (
+                        <div key={f.label} className={`flex items-center gap-2 ${i > 0 ? "sm:pl-6" : ""} sm:pr-6`}>
+                          <f.icon className="size-5 text-accent" />
+                          <span className="text-sm font-medium">{f.label}</span>
+                        </div>
+                      ))}
+                    </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -85,12 +85,12 @@ export function Hero() {
           </motion.div>
         </div>
 
-        {/* Device mockups: laptop + phone, pure CSS - responsive */}
+        {/* Device mockups: laptop + phone, pure CSS */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.7, delay: 0.3 }}
-          className="relative mx-auto w-full max-w-lg animate-float-medium hidden lg:block"
+          className="relative mx-auto w-full max-w-lg animate-float-medium"
         >
           {/* laptop */}
           <div className="rounded-xl border border-border bg-card shadow-2xl shadow-tertiary/20">
@@ -123,8 +123,8 @@ export function Hero() {
           {/* laptop base */}
           <div className="mx-auto h-2 w-[110%] -translate-x-[4.5%] rounded-b-xl bg-gradient-to-b from-muted to-border" />
 
-          {/* phone - only visible on xl+ */}
-          <div className="absolute -bottom-10 -right-2 w-40 rounded-2xl border border-border bg-card p-3 shadow-xl xl:-right-6 xl:w-48 hidden xl:block">
+          {/* phone */}
+          <div className="absolute -bottom-10 -right-2 w-40 rounded-2xl border border-border bg-card p-3 shadow-xl sm:-right-6 sm:w-48">
             <p className="text-[9px] text-muted-foreground">9:41</p>
             <p className="mt-1 text-[11px] font-semibold">Good Morning, John Doe</p>
             <div className="mt-2 rounded-xl bg-gradient-to-br from-tertiary to-accent p-2.5 text-white">
@@ -139,24 +139,6 @@ export function Hero() {
             {["New Order", "Payment Received", "Customer Message"].map((a) => (
               <p key={a} className="mt-1 rounded-md bg-muted/60 px-2 py-1 text-[9px]">{a}</p>
             ))}
-          </div>
-        </motion.div>
-
-        {/* Mobile fallback: simple phone mockup only */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.7, delay: 0.3 }}
-          className="relative mx-auto w-full max-xs:hidden lg:hidden"
-        >
-          <div className="mx-auto max-w-xs rounded-2xl border border-border bg-card p-4 shadow-xl">
-            <p className="text-[10px] text-muted-foreground text-center">9:41</p>
-            <p className="mt-1 text-sm font-semibold text-center">Good Morning</p>
-            <div className="mt-3 rounded-xl bg-gradient-to-br from-tertiary to-accent p-4 text-white text-center">
-              <p className="text-[10px] opacity-80">Total Revenue</p>
-              <p className="font-mono text-base font-bold">Rp 125.000.000</p>
-              <p className="text-[11px]">↑ 12.5%</p>
-            </div>
           </div>
         </motion.div>
       </div>
