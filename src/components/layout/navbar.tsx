@@ -48,17 +48,14 @@ export function Navbar() {
         <div className="flex items-center gap-3">
           <Link
             href="/"
-            className="flex items-center gap-2 text-[color:var(--primary)] font-medium text-xl tracking-tighter"
+            className="flex items-center gap-2.5 text-foreground font-heading font-bold text-xl tracking-tight"
           >
-            <svg
-              className="size-5"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-            >
-              <path
-                d="M19 13h3v6h-2v-6h-3v6H8v-6H5c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h3v-6H5c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h14c1.1 0 2 .9 2 2v2zM7 9c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h2v-6H7 9zM7 15h2v-6H7 15z"
-              />
-            </svg>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo-icon.svg"
+              alt="Switch Code"
+              className="h-7 w-auto object-contain"
+            />
             SWITCH CODE
           </Link>
         </div>
