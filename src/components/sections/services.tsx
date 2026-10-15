@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Globe, Smartphone, ShoppingCart, LayoutDashboard, Plug, Wrench, Building2, Laptop, Phone, Server } from "lucide-react";
+import { Globe, Smartphone, ShoppingCart, LayoutDashboard, Plug, Wrench, Building2, Laptop, Phone, Server, ArrowUpRight } from "lucide-react";
 
 const serviceCategories = [
   {
@@ -90,10 +90,17 @@ export function Services() {
                     viewport={{ once: true, margin: "-40px" }}
                     transition={{ duration: 0.4, delay: i * 0.08 }}
                     whileHover={{ y: -4 }}
-                    className="group rounded-2xl border border-border bg-card p-5 transition-shadow hover:shadow-lg hover:shadow-tertiary/20"
+                    className="group relative flex flex-col justify-between rounded-2xl border border-border/80 bg-card/60 p-5 backdrop-blur-sm transition-all duration-300 hover:border-accent/60 hover:shadow-xl hover:shadow-accent/5"
                   >
-                    <h4 className="font-heading font-semibold">{item.title}</h4>
-                    <p className="mt-2 text-sm text-muted-foreground">{item.desc}</p>
+                    <div>
+                      <div className="flex items-start justify-between gap-2">
+                        <h4 className="font-heading font-semibold text-foreground group-hover:text-accent transition-colors">
+                          {item.title}
+                        </h4>
+                        <ArrowUpRight className="size-4 shrink-0 text-muted-foreground/50 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-accent" />
+                      </div>
+                      <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+                    </div>
                   </motion.div>
                 ))}
               </div>

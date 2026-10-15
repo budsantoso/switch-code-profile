@@ -98,13 +98,19 @@ export function About() {
               <h3 className="mt-1 font-heading text-xl font-bold">Nilai yang Kami Jaga</h3>
               <div className="mt-4 space-y-3">
                 {values.map((v) => (
-                  <div key={v.title} className="rounded-xl border border-border bg-card/60 p-4">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="size-4 shrink-0 text-accent" />
+                  <motion.div
+                    key={v.title}
+                    whileHover={{ x: 4 }}
+                    className="rounded-xl border border-border/80 bg-card/60 p-4 backdrop-blur-sm transition-colors hover:border-accent/50"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className="rounded-full bg-accent/10 p-1 text-accent">
+                        <CheckCircle2 className="size-4 shrink-0" />
+                      </div>
                       <h4 className="font-heading font-semibold text-foreground text-sm">{v.title}</h4>
                     </div>
-                    <p className="mt-2 text-xs leading-relaxed text-muted-foreground pl-6">{v.desc}</p>
-                  </div>
+                    <p className="mt-2 text-xs leading-relaxed text-muted-foreground pl-7">{v.desc}</p>
+                  </motion.div>
                 ))}
               </div>
             </div>
@@ -115,11 +121,17 @@ export function About() {
               <h3 className="mt-1 font-heading text-xl font-bold">Klien yang Kami Layani</h3>
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 {targetClients.map((t) => (
-                  <div key={t.title} className="rounded-xl border border-border bg-card/60 p-4">
-                    <t.icon className="size-5 text-accent" />
-                    <h4 className="mt-2 font-heading font-semibold text-sm">{t.title}</h4>
+                  <motion.div
+                    key={t.title}
+                    whileHover={{ y: -3 }}
+                    className="rounded-xl border border-border/80 bg-card/60 p-4 backdrop-blur-sm transition-all hover:border-accent/40 hover:shadow-lg hover:shadow-accent/5"
+                  >
+                    <div className="rounded-lg bg-accent/10 p-2 text-accent">
+                      <t.icon className="size-5" />
+                    </div>
+                    <h4 className="mt-3 font-heading font-semibold text-sm">{t.title}</h4>
                     <p className="mt-1 text-xs text-muted-foreground">{t.desc}</p>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </div>
