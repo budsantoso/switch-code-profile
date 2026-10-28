@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { API_BASE_URL, Article } from "@/lib/types";
 
-const FALLBACK_ARTICLES: Article[] = [
+export const FALLBACK_ARTICLES: Article[] = [
   {
     id: 1,
     title: "Peluncuran Ekosistem Digital Switch Code 2026: Solusi Software Masa Depan",
@@ -116,7 +116,7 @@ export function ArticlesSection() {
   };
 
   return (
-    <section id="articles" className="relative py-24 sm:py-32 overflow-hidden bg-background/50">
+    <section id="news" className="relative py-24 sm:py-32 overflow-hidden bg-background/50">
       {/* Background accents */}
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-accent/5 blur-[160px]" />
@@ -127,17 +127,17 @@ export function ArticlesSection() {
         <div className="mx-auto max-w-3xl text-center mb-16">
           <div className="inline-flex items-center gap-2 rounded-full border border-tertiary/40 bg-tertiary/10 px-4 py-1.5 text-xs font-semibold text-foreground mb-4">
             <FileText className="size-3.5 text-accent" />
-            <span>INSIGHTS, BLOG & TECH NEWS</span>
+            <span>NEWS & INSIGHTS</span>
           </div>
           <h2 className="font-heading text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
             Wawasan Teknologi &{" "}
             <span className="bg-gradient-to-r from-accent via-cyan-300 to-tertiary bg-clip-text text-transparent">
-              Strategi Digital Terbaru
+              Berita Switch Code
             </span>
           </h2>
           <p className="mt-4 text-sm sm:text-base text-muted-foreground leading-relaxed">
-            Artikel teknis, panduan arsitektur software, dan tren digital terkini yang dirancang untuk
-            mengoptimalkan visibilitas online dan performa bisnis Anda di mesin pencari.
+            Artikel teknologi, studi kasus arsitektur perangkat lunak, dan wawasan industri digital
+            terkini dari tim engineer Switch Code.
           </p>
         </div>
 
@@ -163,7 +163,9 @@ export function ArticlesSection() {
 
                 {/* Title */}
                 <h3 className="font-heading text-lg font-bold text-foreground mt-4 line-clamp-2 leading-snug group-hover:text-accent transition-colors">
-                  {article.title}
+                  <Link href={`/news/${article.slug}/`}>
+                    {article.title}
+                  </Link>
                 </h3>
 
                 {/* Excerpt */}
@@ -174,14 +176,13 @@ export function ArticlesSection() {
 
               {/* Read button */}
               <div className="mt-6 pt-4 border-t border-border/40 flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={() => setActiveArticle(article)}
+                <Link
+                  href={`/news/${article.slug}/`}
                   className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent group-hover:gap-2.5 transition-all"
                 >
                   <span>Baca Selengkapnya</span>
                   <ChevronRight className="size-3.5" />
-                </button>
+                </Link>
                 <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-mono text-accent">
                   Tech Insight
                 </span>
@@ -190,73 +191,6 @@ export function ArticlesSection() {
           ))}
         </div>
       </div>
-
-      {/* Reader Modal */}
-      <AnimatePresence>
-        {activeArticle && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-xl overflow-y-auto">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.2 }}
-              className="relative w-full max-w-3xl rounded-3xl border border-border/80 bg-card p-6 sm:p-10 shadow-2xl max-h-[88vh] overflow-y-auto"
-            >
-              <button
-                type="button"
-                aria-label="Tutup"
-                onClick={() => setActiveArticle(null)}
-                className="absolute top-6 right-6 rounded-full border border-border/80 bg-background/60 p-2 text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <X className="size-5" />
-              </button>
-
-              <div className="flex items-center gap-3 text-xs text-muted-foreground mb-4 font-mono">
-                <span className="rounded-full bg-accent/15 px-3 py-1 text-accent font-semibold">
-                  Artikel Switch Code
-                </span>
-                <span>•</span>
-                <span>{formatDate(activeArticle.published_at)}</span>
-              </div>
-
-              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-foreground leading-tight mb-4">
-                {activeArticle.title}
-              </h2>
-
-              <div className="flex items-center gap-2 text-xs text-muted-foreground pb-6 border-b border-border/60 mb-6">
-                <User className="size-3.5 text-accent" />
-                <span>
-                  Oleh <strong>{activeArticle.author?.name || "Tim Switch Code"}</strong>
-                </span>
-              </div>
-
-              {activeArticle.summary && (
-                <div className="rounded-2xl border border-accent/30 bg-accent/5 p-4 text-xs sm:text-sm text-foreground/90 italic mb-6 leading-relaxed">
-                  &ldquo;{activeArticle.summary}&rdquo;
-                </div>
-              )}
-
-              <div className="text-xs sm:text-sm text-muted-foreground space-y-4 leading-relaxed whitespace-pre-line">
-                {activeArticle.content}
-              </div>
-
-              <div className="mt-10 pt-6 border-t border-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="text-xs text-muted-foreground">
-                  Ingin berkonsultasi seputar implementasi teknologi ini?
-                </div>
-                <a
-                  href="#contact"
-                  onClick={() => setActiveArticle(null)}
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-accent to-tertiary px-5 py-2.5 text-xs font-semibold text-white shadow-md shadow-accent/20 hover:scale-105 transition-all"
-                >
-                  <span>Hubungi Tim Switch Code</span>
-                  <ArrowRight className="size-3.5" />
-                </a>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </section>
   );
 }

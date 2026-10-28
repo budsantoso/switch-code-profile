@@ -12,7 +12,7 @@ export const navItems = [
   { href: "#products", label: "Paket & Modul" },
   { href: "#process", label: "Alur Kerja" },
   { href: "#portfolio", label: "Portofolio" },
-  { href: "#articles", label: "Berita & SEO" },
+  { href: "#news", label: "News" },
   { href: "#contact", label: "Kontak" },
 ];
 
