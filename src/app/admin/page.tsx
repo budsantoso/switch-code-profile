@@ -17,6 +17,17 @@ import {
   ArrowLeft,
   Loader2,
   AlertCircle,
+  Bold,
+  Italic,
+  Heading2,
+  Heading3,
+  List,
+  ListOrdered,
+  Quote,
+  Image as ImageIcon,
+  Link as LinkIcon,
+  Eye,
+  Code,
 } from "lucide-react";
 import { getUser, clearAuth, fetchWithAuth } from "@/lib/api";
 import { Product, Article, ProductModule, User } from "@/lib/types";
@@ -52,8 +63,11 @@ export default function AdminDashboardPage() {
   const [artIsPublished, setArtIsPublished] = useState(true);
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [savingArticle, setSavingArticle] = useState(false);
+  const [uploadingInlineImg, setUploadingInlineImg] = useState(false);
+  const [showEditorPreview, setShowEditorPreview] = useState(false);
 
   const fileInputId = useId();
+  const inlineImgInputId = useId();
 
   useEffect(() => {
     const curUser = getUser();
@@ -203,6 +217,7 @@ export default function AdminDashboardPage() {
     setArtContent("");
     setArtIsPublished(true);
     setSelectedFiles(null);
+    setShowEditorPreview(false);
     setShowArticleModal(true);
   };
 
@@ -213,7 +228,61 @@ export default function AdminDashboardPage() {
     setArtContent(a.content);
     setArtIsPublished(a.is_published);
     setSelectedFiles(null);
+    setShowEditorPreview(false);
     setShowArticleModal(true);
+  };
+
+  const handleInsertTag = (before: string, after: string = "", defaultText: string = "") => {
+    const textarea = document.getElementById("artContentTextarea") as HTMLTextAreaElement | null;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selected = artContent.substring(start, end) || defaultText;
+    const replacement = `${before}${selected}${after}`;
+    const newContent =
+      artContent.substring(0, start) + replacement + artContent.substring(end);
+
+    setArtContent(newContent);
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(
+        start + before.length,
+        start + before.length + selected.length
+      );
+    }, 0);
+  };
+
+  const handleUploadInlineImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingInlineImg(true);
+    setError(null);
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const res = await fetchWithAuth("/api/admin/articles/upload-image", {
+        method: "POST",
+        body: formData,
+      });
+
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.message || "Gagal mengunggah gambar.");
+
+      const imgUrl = resData?.data?.url;
+      if (imgUrl) {
+        handleInsertTag(`\n\n![${file.name.replace(/\.[^/.]+$/, "")}](${imgUrl})\n\n`);
+        setNotice("Gambar berhasil diunggah dan disisipkan ke posisi kursor!");
+      }
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Gagal upload gambar inline.");
+    } finally {
+      setUploadingInlineImg(false);
+      e.target.value = "";
+    }
   };
 
   const handleSaveArticle = async (e: React.FormEvent) => {
@@ -755,17 +824,180 @@ export default function AdminDashboardPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-foreground mb-1">
-                  Konten Berita Lengkap
-                </label>
-                <textarea
-                  rows={6}
-                  required
-                  value={artContent}
-                  onChange={(e) => setArtContent(e.target.value)}
-                  placeholder="Tuliskan isi berita di sini..."
-                  className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-xs text-foreground focus:border-accent focus:outline-none"
-                />
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-xs font-medium text-foreground">
+                    Konten Berita Lengkap (WYSIWYG & Visual Media)
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setShowEditorPreview(!showEditorPreview)}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 py-1 text-[11px] font-semibold text-accent hover:bg-accent/10 transition-colors"
+                  >
+                    <Eye className="size-3.5" />
+                    <span>{showEditorPreview ? "Mode Tulis" : "Preview Tampilan"}</span>
+                  </button>
+                </div>
+
+                {/* Toolbar WYSIWYG */}
+                <div className="flex flex-wrap items-center gap-1 p-2 rounded-t-xl border border-border bg-card/90 border-b-0 text-xs">
+                  <button
+                    type="button"
+                    title="Bold"
+                    onClick={() => handleInsertTag("**", "**", "teks tebal")}
+                    className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+                  >
+                    <Bold className="size-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    title="Italic"
+                    onClick={() => handleInsertTag("*", "*", "teks miring")}
+                    className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+                  >
+                    <Italic className="size-3.5" />
+                  </button>
+                  <span className="text-border mx-1">|</span>
+                  <button
+                    type="button"
+                    title="Heading 2"
+                    onClick={() => handleInsertTag("\n## ", "\n", "Sub-judul Bagian")}
+                    className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground font-bold text-xs"
+                  >
+                    <Heading2 className="size-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    title="Heading 3"
+                    onClick={() => handleInsertTag("\n### ", "\n", "Topik Spesifik")}
+                    className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground text-xs"
+                  >
+                    <Heading3 className="size-3.5" />
+                  </button>
+                  <span className="text-border mx-1">|</span>
+                  <button
+                    type="button"
+                    title="Bullet List"
+                    onClick={() => handleInsertTag("\n- ", "", "Poin daftar")}
+                    className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+                  >
+                    <List className="size-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    title="Numbered List"
+                    onClick={() => handleInsertTag("\n1. ", "", "Langkah pertama")}
+                    className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+                  >
+                    <ListOrdered className="size-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    title="Quote"
+                    onClick={() => handleInsertTag("\n> ", "\n", "Kutipan penting...")}
+                    className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+                  >
+                    <Quote className="size-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    title="Link"
+                    onClick={() => handleInsertTag("[", "](https://switchcode.id)", "Teks link")}
+                    className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+                  >
+                    <LinkIcon className="size-3.5" />
+                  </button>
+                  <span className="text-border mx-1">|</span>
+
+                  {/* Tombol Sisipkan Gambar Bebas di Posisi Kursor */}
+                  <label
+                    htmlFor={inlineImgInputId}
+                    title="Unggah dan Sisipkan Gambar di Posisi Kursor Ini"
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-accent/15 px-2.5 py-1 text-[11px] font-semibold text-accent hover:bg-accent/25 cursor-pointer transition-colors"
+                  >
+                    {uploadingInlineImg ? (
+                      <Loader2 className="size-3.5 animate-spin" />
+                    ) : (
+                      <ImageIcon className="size-3.5" />
+                    )}
+                    <span>{uploadingInlineImg ? "Mengunggah..." : "+ Sisipkan Gambar di Sini"}</span>
+                  </label>
+                  <input
+                    id={inlineImgInputId}
+                    type="file"
+                    accept="image/*"
+                    disabled={uploadingInlineImg}
+                    onChange={handleUploadInlineImage}
+                    className="hidden"
+                  />
+                </div>
+
+                {showEditorPreview ? (
+                  <div className="min-h-[220px] max-h-[380px] overflow-y-auto rounded-b-xl border border-border bg-background/70 p-4 text-xs sm:text-sm text-foreground/90 space-y-3">
+                    {artContent ? (
+                      artContent.split("\n\n").map((para, i) => {
+                        const imgMatch = para.match(/^!\[(.*?)\]\((.*?)\)$/);
+                        if (imgMatch) {
+                          return (
+                            <div key={i} className="my-3 rounded-xl overflow-hidden border border-border/80">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
+                                src={imgMatch[2]}
+                                alt={imgMatch[1]}
+                                className="w-full max-h-72 object-cover rounded-lg"
+                              />
+                              {imgMatch[1] && (
+                                <p className="text-[10px] text-center text-muted-foreground py-1 bg-card/60">
+                                  {imgMatch[1]}
+                                </p>
+                              )}
+                            </div>
+                          );
+                        }
+                        if (para.startsWith("## ")) {
+                          return (
+                            <h2 key={i} className="font-heading font-bold text-base sm:text-lg text-foreground mt-2">
+                              {para.replace("## ", "")}
+                            </h2>
+                          );
+                        }
+                        if (para.startsWith("### ")) {
+                          return (
+                            <h3 key={i} className="font-heading font-semibold text-sm sm:text-base text-accent mt-2">
+                              {para.replace("### ", "")}
+                            </h3>
+                          );
+                        }
+                        if (para.startsWith("> ")) {
+                          return (
+                            <blockquote key={i} className="border-l-2 border-accent pl-3 italic text-muted-foreground">
+                              {para.replace("> ", "")}
+                            </blockquote>
+                          );
+                        }
+                        return (
+                          <p key={i} className="leading-relaxed whitespace-pre-line text-muted-foreground">
+                            {para}
+                          </p>
+                        );
+                      })
+                    ) : (
+                      <p className="text-muted-foreground italic">Belum ada konten untuk ditampilkan...</p>
+                    )}
+                  </div>
+                ) : (
+                  <textarea
+                    id="artContentTextarea"
+                    rows={8}
+                    required
+                    value={artContent}
+                    onChange={(e) => setArtContent(e.target.value)}
+                    placeholder="Tuliskan isi berita di sini... Gunakan tombol toolbar di atas untuk format dan meletakkan gambar di paragraf manapun yang diinginkan."
+                    className="w-full rounded-b-xl border border-border bg-background px-3.5 py-2.5 text-xs text-foreground focus:border-accent focus:outline-none font-mono leading-relaxed"
+                  />
+                )}
+                <p className="text-[10px] text-muted-foreground mt-1.5">
+                  Tips: Anda bebas menaruh kursor di antara paragraf mana saja, lalu klik <strong>+ Sisipkan Gambar di Sini</strong> untuk mengunggah dan menampilkan foto pada posisi tersebut.
+                </p>
               </div>
 
               <div>

@@ -170,13 +170,58 @@ export default async function NewsDetailPage({
             )}
           </header>
 
-          {/* Article Body */}
+          {/* Article Body with Markdown & Visual Media support */}
           <article className="prose prose-invert max-w-none text-foreground/90 leading-relaxed text-sm sm:text-base space-y-6">
-            {article.content.split("\n\n").map((paragraph, idx) => (
-              <p key={idx} className="whitespace-pre-line text-muted-foreground leading-relaxed">
-                {paragraph}
-              </p>
-            ))}
+            {article.content.split("\n\n").map((paragraph, idx) => {
+              const imgMatch = paragraph.match(/^!\[(.*?)\]\((.*?)\)$/);
+              if (imgMatch) {
+                return (
+                  <figure key={idx} className="my-8 rounded-2xl overflow-hidden border border-border/80 bg-card/40 shadow-xl">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={imgMatch[2]}
+                      alt={imgMatch[1] || "Dokumentasi Berita Switch Code"}
+                      className="w-full max-h-[520px] object-cover"
+                    />
+                    {imgMatch[1] && (
+                      <figcaption className="text-center text-xs text-muted-foreground py-2.5 px-4 bg-card/80 border-t border-border/60">
+                        {imgMatch[1]}
+                      </figcaption>
+                    )}
+                  </figure>
+                );
+              }
+
+              if (paragraph.startsWith("## ")) {
+                return (
+                  <h2 key={idx} className="font-heading text-xl sm:text-2xl font-bold text-foreground mt-8 mb-2">
+                    {paragraph.replace("## ", "")}
+                  </h2>
+                );
+              }
+
+              if (paragraph.startsWith("### ")) {
+                return (
+                  <h3 key={idx} className="font-heading text-lg sm:text-xl font-semibold text-accent mt-6 mb-2">
+                    {paragraph.replace("### ", "")}
+                  </h3>
+                );
+              }
+
+              if (paragraph.startsWith("> ")) {
+                return (
+                  <blockquote key={idx} className="border-l-4 border-accent pl-4 italic text-muted-foreground my-4 bg-accent/5 py-2 rounded-r-xl">
+                    {paragraph.replace("> ", "")}
+                  </blockquote>
+                );
+              }
+
+              return (
+                <p key={idx} className="whitespace-pre-line text-muted-foreground leading-relaxed">
+                  {paragraph}
+                </p>
+              );
+            })}
           </article>
 
           {/* Bottom CTA Card */}
