@@ -122,7 +122,7 @@ export function ArticlesSection() {
       return p.startsWith("http") ? p : `${API_BASE_URL}/storage/${p}`;
     }
     if (!content) return null;
-    const match = content.match(/!\[.*?\]\((https?:\/\/.*?)\)/);
+    const match = content.match(/!\[.*?\]\s*\((https?:\/\/[^\s)]+)\)/);
     return match ? match[1] : null;
   };
 
@@ -130,7 +130,7 @@ export function ArticlesSection() {
   const cleanExcerpt = (text?: string) => {
     if (!text) return "";
     return text
-      .replace(/!\[.*?\]\(.*?\)/g, "")
+      .replace(/!\[.*?\]\s*\(.*?\)/g, "")
       .replace(/##+/g, "")
       .replace(/[*_`#]/g, "")
       .trim();

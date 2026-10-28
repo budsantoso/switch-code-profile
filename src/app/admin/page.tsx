@@ -934,52 +934,79 @@ export default function AdminDashboardPage() {
                 {showEditorPreview ? (
                   <div className="min-h-[220px] max-h-[380px] overflow-y-auto rounded-b-xl border border-border bg-background/70 p-4 text-xs sm:text-sm text-foreground/90 space-y-3">
                     {artContent ? (
-                      artContent.split("\n\n").map((para, i) => {
-                        const imgMatch = para.match(/^!\[(.*?)\]\((.*?)\)$/);
-                        if (imgMatch) {
+                      (() => {
+                        const normalized = artContent.replace(/!\[([^\]]*)\]\s*\((https?:\/\/[^\s)]+)\)/g, "\n\nIMAGE_BLOCK::$1::$2\n\n");
+                        return normalized.split("\n\n").map((para, i) => {
+                          const trimmed = para.trim();
+                          if (!trimmed) return null;
+
+                          if (trimmed.startsWith("IMAGE_BLOCK::")) {
+                            const parts = trimmed.split("::");
+                            const alt = parts[1] || "";
+                            const src = parts[2];
+                            return (
+                              <div key={i} className="my-3 rounded-xl overflow-hidden border border-border/80">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                  src={src}
+                                  alt={alt}
+                                  className="w-full max-h-72 object-cover rounded-lg"
+                                />
+                                {alt && (
+                                  <p className="text-[10px] text-center text-muted-foreground py-1 bg-card/60">
+                                    {alt}
+                                  </p>
+                                )}
+                              </div>
+                            );
+                          }
+
+                          const imgMatch = trimmed.match(/^!\[(.*?)\]\((.*?)\)$/);
+                          if (imgMatch) {
+                            return (
+                              <div key={i} className="my-3 rounded-xl overflow-hidden border border-border/80">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                  src={imgMatch[2]}
+                                  alt={imgMatch[1]}
+                                  className="w-full max-h-72 object-cover rounded-lg"
+                                />
+                                {imgMatch[1] && (
+                                  <p className="text-[10px] text-center text-muted-foreground py-1 bg-card/60">
+                                    {imgMatch[1]}
+                                  </p>
+                                )}
+                              </div>
+                            );
+                          }
+                          if (trimmed.startsWith("## ")) {
+                            return (
+                              <h2 key={i} className="font-heading font-bold text-base sm:text-lg text-foreground mt-2">
+                                {trimmed.replace("## ", "")}
+                              </h2>
+                            );
+                          }
+                          if (trimmed.startsWith("### ")) {
+                            return (
+                              <h3 key={i} className="font-heading font-semibold text-sm sm:text-base text-accent mt-2">
+                                {trimmed.replace("### ", "")}
+                              </h3>
+                            );
+                          }
+                          if (trimmed.startsWith("> ")) {
+                            return (
+                              <blockquote key={i} className="border-l-2 border-accent pl-3 italic text-muted-foreground">
+                                {trimmed.replace("> ", "")}
+                              </blockquote>
+                            );
+                          }
                           return (
-                            <div key={i} className="my-3 rounded-xl overflow-hidden border border-border/80">
-                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img
-                                src={imgMatch[2]}
-                                alt={imgMatch[1]}
-                                className="w-full max-h-72 object-cover rounded-lg"
-                              />
-                              {imgMatch[1] && (
-                                <p className="text-[10px] text-center text-muted-foreground py-1 bg-card/60">
-                                  {imgMatch[1]}
-                                </p>
-                              )}
-                            </div>
+                            <p key={i} className="leading-relaxed whitespace-pre-line text-muted-foreground">
+                              {trimmed}
+                            </p>
                           );
-                        }
-                        if (para.startsWith("## ")) {
-                          return (
-                            <h2 key={i} className="font-heading font-bold text-base sm:text-lg text-foreground mt-2">
-                              {para.replace("## ", "")}
-                            </h2>
-                          );
-                        }
-                        if (para.startsWith("### ")) {
-                          return (
-                            <h3 key={i} className="font-heading font-semibold text-sm sm:text-base text-accent mt-2">
-                              {para.replace("### ", "")}
-                            </h3>
-                          );
-                        }
-                        if (para.startsWith("> ")) {
-                          return (
-                            <blockquote key={i} className="border-l-2 border-accent pl-3 italic text-muted-foreground">
-                              {para.replace("> ", "")}
-                            </blockquote>
-                          );
-                        }
-                        return (
-                          <p key={i} className="leading-relaxed whitespace-pre-line text-muted-foreground">
-                            {para}
-                          </p>
-                        );
-                      })
+                        });
+                      })()
                     ) : (
                       <p className="text-muted-foreground italic">Belum ada konten untuk ditampilkan...</p>
                     )}

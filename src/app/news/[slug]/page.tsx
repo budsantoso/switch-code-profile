@@ -172,56 +172,88 @@ export default async function NewsDetailPage({
 
           {/* Article Body with Markdown & Visual Media support */}
           <article className="prose prose-invert max-w-none text-foreground/90 leading-relaxed text-sm sm:text-base space-y-6">
-            {article.content.split("\n\n").map((paragraph, idx) => {
-              const imgMatch = paragraph.match(/^!\[(.*?)\]\((.*?)\)$/);
-              if (imgMatch) {
-                return (
-                  <figure key={idx} className="my-8 rounded-2xl overflow-hidden border border-border/80 bg-card/40 shadow-xl">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={imgMatch[2]}
-                      alt={imgMatch[1] || "Dokumentasi Berita Switch Code"}
-                      className="w-full max-h-[520px] object-cover"
-                    />
-                    {imgMatch[1] && (
-                      <figcaption className="text-center text-xs text-muted-foreground py-2.5 px-4 bg-card/80 border-t border-border/60">
-                        {imgMatch[1]}
-                      </figcaption>
-                    )}
-                  </figure>
-                );
-              }
+            {(() => {
+              // Normalisasi markdown image jika terpisah oleh newline atau spasi antara ![alt] dan (url)
+              const normalizedContent = article.content
+                .replace(/!\[([^\]]*)\]\s*\((https?:\/\/[^\s)]+)\)/g, "\n\nIMAGE_BLOCK::$1::$2\n\n");
 
-              if (paragraph.startsWith("## ")) {
-                return (
-                  <h2 key={idx} className="font-heading text-xl sm:text-2xl font-bold text-foreground mt-8 mb-2">
-                    {paragraph.replace("## ", "")}
-                  </h2>
-                );
-              }
+              return normalizedContent.split("\n\n").map((block, idx) => {
+                const trimmed = block.trim();
+                if (!trimmed) return null;
 
-              if (paragraph.startsWith("### ")) {
-                return (
-                  <h3 key={idx} className="font-heading text-lg sm:text-xl font-semibold text-accent mt-6 mb-2">
-                    {paragraph.replace("### ", "")}
-                  </h3>
-                );
-              }
+                if (trimmed.startsWith("IMAGE_BLOCK::")) {
+                  const parts = trimmed.split("::");
+                  const alt = parts[1] || "Dokumentasi Berita Switch Code";
+                  const src = parts[2];
 
-              if (paragraph.startsWith("> ")) {
-                return (
-                  <blockquote key={idx} className="border-l-4 border-accent pl-4 italic text-muted-foreground my-4 bg-accent/5 py-2 rounded-r-xl">
-                    {paragraph.replace("> ", "")}
-                  </blockquote>
-                );
-              }
+                  return (
+                    <figure key={idx} className="my-8 rounded-2xl overflow-hidden border border-border/80 bg-card/40 shadow-xl">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={src}
+                        alt={alt}
+                        className="w-full max-h-[550px] object-cover"
+                      />
+                      {alt && alt !== "Dokumentasi Berita Switch Code" && (
+                        <figcaption className="text-center text-xs text-muted-foreground py-2.5 px-4 bg-card/80 border-t border-border/60">
+                          {alt}
+                        </figcaption>
+                      )}
+                    </figure>
+                  );
+                }
 
-              return (
-                <p key={idx} className="whitespace-pre-line text-muted-foreground leading-relaxed">
-                  {paragraph}
-                </p>
-              );
-            })}
+                // Fallback direct regex check
+                const imgMatch = trimmed.match(/^!\[(.*?)\]\((.*?)\)$/);
+                if (imgMatch) {
+                  return (
+                    <figure key={idx} className="my-8 rounded-2xl overflow-hidden border border-border/80 bg-card/40 shadow-xl">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={imgMatch[2]}
+                        alt={imgMatch[1] || "Dokumentasi Berita Switch Code"}
+                        className="w-full max-h-[550px] object-cover"
+                      />
+                      {imgMatch[1] && (
+                        <figcaption className="text-center text-xs text-muted-foreground py-2.5 px-4 bg-card/80 border-t border-border/60">
+                          {imgMatch[1]}
+                        </figcaption>
+                      )}
+                    </figure>
+                  );
+                }
+
+                if (trimmed.startsWith("## ")) {
+                  return (
+                    <h2 key={idx} className="font-heading text-xl sm:text-2xl font-bold text-foreground mt-8 mb-2">
+                      {trimmed.replace("## ", "")}
+                    </h2>
+                  );
+                }
+
+                if (trimmed.startsWith("### ")) {
+                  return (
+                    <h3 key={idx} className="font-heading text-lg sm:text-xl font-semibold text-accent mt-6 mb-2">
+                      {trimmed.replace("### ", "")}
+                    </h3>
+                  );
+                }
+
+                if (trimmed.startsWith("> ")) {
+                  return (
+                    <blockquote key={idx} className="border-l-4 border-accent pl-4 italic text-muted-foreground my-4 bg-accent/5 py-2 rounded-r-xl">
+                      {trimmed.replace("> ", "")}
+                    </blockquote>
+                  );
+                }
+
+                return (
+                  <p key={idx} className="whitespace-pre-line text-muted-foreground leading-relaxed">
+                    {trimmed}
+                  </p>
+                );
+              });
+            })()}
           </article>
 
           {/* Bottom CTA Card */}
