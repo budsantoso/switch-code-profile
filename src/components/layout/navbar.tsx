@@ -103,6 +103,12 @@ export function Navbar() {
 
         {/* Desktop CTA Button */}
         <div className="hidden lg:flex items-center gap-4">
+          <Link
+            href="/login"
+            className="inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-card/60 px-4 py-2 text-xs font-medium text-foreground transition-all hover:bg-muted/80 hover:border-accent/40"
+          >
+            Masuk
+          </Link>
           <a
             href="#contact"
             className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-accent to-tertiary px-5 py-2.5 text-xs font-semibold text-white shadow-md shadow-accent/20 transition-all hover:scale-105 hover:shadow-accent/40"
@@ -182,7 +188,14 @@ export function Navbar() {
                 })}
 
                 {/* Mobile Menu CTA */}
-                <div className="mt-6 border-t border-border/60 pt-5">
+                <div className="mt-6 border-t border-border/60 pt-5 space-y-2.5">
+                  <Link
+                    href="/login"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card/60 px-5 py-3 text-sm font-semibold text-foreground transition-all hover:bg-muted"
+                  >
+                    <span>Masuk ke Akun</span>
+                  </Link>
                   <a
                     href="#contact"
                     onClick={() => setIsMenuOpen(false)}
