@@ -119,7 +119,7 @@ export function ArticlesSection() {
   const extractCoverImage = (content?: string, images?: { image_path: string }[]) => {
     if (images && images.length > 0 && images[0].image_path) {
       const p = images[0].image_path;
-      return p.startsWith("http") ? p : `${API_BASE_URL}/storage/${p}`;
+      return p.startsWith("http") ? p : `${API_BASE_URL}/api/storage/${p}`;
     }
     if (!content) return null;
     const match = content.match(/!\[.*?\]\s*\((https?:\/\/[^\s)]+)\)/);
