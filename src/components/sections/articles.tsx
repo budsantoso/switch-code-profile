@@ -115,6 +115,27 @@ export function ArticlesSection() {
     }
   };
 
+  // Helper untuk mengekstrak gambar pertama dari inline markdown konten
+  const extractCoverImage = (content?: string, images?: { image_path: string }[]) => {
+    if (images && images.length > 0 && images[0].image_path) {
+      const p = images[0].image_path;
+      return p.startsWith("http") ? p : `${API_BASE_URL}/storage/${p}`;
+    }
+    if (!content) return null;
+    const match = content.match(/!\[.*?\]\((https?:\/\/.*?)\)/);
+    return match ? match[1] : null;
+  };
+
+  // Helper untuk membersihkan raw markdown/image tag dari summary card
+  const cleanExcerpt = (text?: string) => {
+    if (!text) return "";
+    return text
+      .replace(/!\[.*?\]\(.*?\)/g, "")
+      .replace(/##+/g, "")
+      .replace(/[*_`#]/g, "")
+      .trim();
+  };
+
   return (
     <section id="news" className="relative py-24 sm:py-32 overflow-hidden bg-background/50">
       {/* Background accents */}
@@ -143,52 +164,73 @@ export function ArticlesSection() {
 
         {/* Articles Grid */}
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {articles.map((article, idx) => (
-            <article
-              key={article.id || idx}
-              className="group relative flex flex-col justify-between rounded-3xl border border-border/70 bg-card/60 p-6 shadow-xl backdrop-blur-md transition-all hover:border-accent/50 hover:bg-card/90 hover:-translate-y-1 duration-300"
-            >
-              <div>
-                {/* Meta info header */}
-                <div className="flex items-center justify-between text-[11px] text-muted-foreground pb-4 border-b border-border/40">
-                  <div className="flex items-center gap-1.5 font-mono">
-                    <Calendar className="size-3 text-accent" />
-                    <span>{formatDate(article.published_at)}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <User className="size-3 text-muted-foreground" />
-                    <span>{article.author?.name || "Switch Code"}</span>
+          {articles.map((article, idx) => {
+            const coverImg = extractCoverImage(article.content, article.images);
+
+            return (
+              <article
+                key={article.id || idx}
+                className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-border/70 bg-card/60 shadow-xl backdrop-blur-md transition-all hover:border-accent/50 hover:bg-card/90 hover:-translate-y-1.5 duration-300"
+              >
+                <div>
+                  {/* Cover Image jika artikel memiliki gambar */}
+                  {coverImg && (
+                    <div className="relative h-48 w-full overflow-hidden bg-muted/40 border-b border-border/50">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={coverImg}
+                        alt={article.title}
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                      <div className="absolute top-3 right-3 rounded-full bg-background/80 backdrop-blur-md px-2.5 py-0.5 text-[10px] font-mono font-medium text-accent border border-border/60">
+                        News
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="p-6">
+                    {/* Meta info header */}
+                    <div className="flex items-center justify-between text-[11px] text-muted-foreground pb-4 border-b border-border/40">
+                      <div className="flex items-center gap-1.5 font-mono">
+                        <Calendar className="size-3 text-accent" />
+                        <span>{formatDate(article.published_at)}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <User className="size-3 text-muted-foreground" />
+                        <span>{article.author?.name || "Switch Code"}</span>
+                      </div>
+                    </div>
+
+                    {/* Title */}
+                    <h3 className="font-heading text-lg font-bold text-foreground mt-4 line-clamp-2 leading-snug group-hover:text-accent transition-colors">
+                      <Link href={`/news/${article.slug}/`}>
+                        {article.title}
+                      </Link>
+                    </h3>
+
+                    {/* Excerpt */}
+                    <p className="mt-3 text-xs text-muted-foreground line-clamp-3 leading-relaxed">
+                      {cleanExcerpt(article.summary || article.content)}
+                    </p>
                   </div>
                 </div>
 
-                {/* Title */}
-                <h3 className="font-heading text-lg font-bold text-foreground mt-4 line-clamp-2 leading-snug group-hover:text-accent transition-colors">
-                  <Link href={`/news/${article.slug}/`}>
-                    {article.title}
+                {/* Read button */}
+                <div className="px-6 pb-6 pt-2 flex items-center justify-between border-t border-border/30">
+                  <Link
+                    href={`/news/${article.slug}/`}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent group-hover:gap-2.5 transition-all"
+                  >
+                    <span>Baca Selengkapnya</span>
+                    <ChevronRight className="size-3.5" />
                   </Link>
-                </h3>
-
-                {/* Excerpt */}
-                <p className="mt-3 text-xs text-muted-foreground line-clamp-3 leading-relaxed">
-                  {article.summary || article.content}
-                </p>
-              </div>
-
-              {/* Read button */}
-              <div className="mt-6 pt-4 border-t border-border/40 flex items-center justify-between">
-                <Link
-                  href={`/news/${article.slug}/`}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent group-hover:gap-2.5 transition-all"
-                >
-                  <span>Baca Selengkapnya</span>
-                  <ChevronRight className="size-3.5" />
-                </Link>
-                <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-mono text-accent">
-                  Tech Insight
-                </span>
-              </div>
-            </article>
-          ))}
+                  <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-mono text-accent">
+                    Tech Insight
+                  </span>
+                </div>
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>
