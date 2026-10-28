@@ -2,6 +2,9 @@
   RewriteEngine On
   RewriteBase /
 
+  # Force index.html for root directory
+  DirectoryIndex index.html index.htm
+
   # Handle static HTML files without extension
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
