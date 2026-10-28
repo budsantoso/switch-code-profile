@@ -9,8 +9,10 @@ export const navItems = [
   { href: "#hero", label: "Beranda" },
   { href: "#about", label: "Tentang" },
   { href: "#services", label: "Layanan" },
+  { href: "#products", label: "Paket & Modul" },
   { href: "#process", label: "Alur Kerja" },
-  { href: "#portfolio", label: "Portofolio Konsep" },
+  { href: "#portfolio", label: "Portofolio" },
+  { href: "#articles", label: "Berita & SEO" },
   { href: "#contact", label: "Kontak" },
 ];
 

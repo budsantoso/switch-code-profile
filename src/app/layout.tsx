@@ -33,9 +33,12 @@ export const metadata: Metadata = {
     "jasa pembuatan website",
     "jasa pembuatan aplikasi",
     "software house Indonesia",
-    "web development",
-    "mobile app development",
-    "desain responsif",
+    "web development Jakarta Tangerang",
+    "custom software modules",
+    "ERP sistem informasi perusahaan",
+    "Next.js web development",
+    "Laravel backend API",
+    "jasa SEO website",
   ],
   openGraph: {
     type: "website",
@@ -54,11 +57,34 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Switch Code",
+    "url": "https://switchcode.id",
+    "logo": "https://switchcode.id/logo-icon.png",
+    "description":
+      "Switch Code — Jasa pembuatan website dan aplikasi kustom profesional dengan arsitektur modern Next.js dan Laravel.",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+62-812-8362-6388",
+      "contactType": "sales",
+      "availableLanguage": ["Indonesian", "English"],
+    },
+    "sameAs": ["https://github.com/budsantoso/switchcode-backend"],
+  };
+
   return (
     <html
       lang="id"
       className={`${sans.variable} ${heading.variable} ${mono.variable}`}
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">
         {children}
       </body>
