@@ -5,7 +5,7 @@ import { ArrowLeft, Calendar, User, Clock, Share2, Sparkles, MessageCircle } fro
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { API_BASE_URL, Article } from "@/lib/types";
-import { FALLBACK_ARTICLES } from "@/components/sections/articles";
+import { FALLBACK_ARTICLES } from "@/lib/constants";
 
 export async function generateStaticParams() {
   let articles = FALLBACK_ARTICLES;

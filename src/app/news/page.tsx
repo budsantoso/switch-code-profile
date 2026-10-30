@@ -7,7 +7,7 @@ import { ArrowLeft, Calendar, User, Sparkles, MessageCircle, Loader2 } from "luc
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { API_BASE_URL, Article } from "@/lib/types";
-import { FALLBACK_ARTICLES } from "@/components/sections/articles";
+import { FALLBACK_ARTICLES } from "@/lib/constants";
 
 export default function NewsDetailPage() {
   const pathname = usePathname();
