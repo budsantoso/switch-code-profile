@@ -10,7 +10,7 @@ import { FALLBACK_ARTICLES } from "@/components/sections/articles";
 export async function generateStaticParams() {
   let articles = FALLBACK_ARTICLES;
   try {
-    const res = await fetch(`${API_BASE_URL}/api/articles`);
+    const res = await fetch(`${API_BASE_URL}/api/articles?per_page=100`);
     if (res.ok) {
       const json = await res.json();
       const items: Article[] = json?.data?.data || json?.data || [];
@@ -22,8 +22,14 @@ export async function generateStaticParams() {
     // Gunakan fallback
   }
 
-  return articles.map((a) => ({
-    slug: a.slug,
+  // Gabungkan slug fallback dan slug backend
+  const allSlugs = new Set([
+    ...FALLBACK_ARTICLES.map((a) => a.slug),
+    ...articles.map((a) => a.slug),
+  ]);
+
+  return Array.from(allSlugs).map((slug) => ({
+    slug,
   }));
 }
 

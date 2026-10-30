@@ -315,6 +315,13 @@ export default function AdminDashboardPage() {
       const resData = await res.json();
       if (!res.ok) throw new Error(resData.message || "Gagal menyimpan artikel.");
 
+      // Trigger automatic rebuild GitHub Actions agar halaman statis artikel baru langsung ter-generate
+      try {
+        fetchWithAuth("/api/admin/trigger-deploy", { method: "POST" }).catch(() => {});
+      } catch {
+        // Silent
+      }
+
       setNotice(editingArticleId ? "Artikel diperbarui!" : "Artikel baru dipublikasikan!");
       setShowArticleModal(false);
       loadData();
